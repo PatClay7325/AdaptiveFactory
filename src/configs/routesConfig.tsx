@@ -21,26 +21,35 @@ const mainRoutes: FuseRouteConfigType[] = Object.keys(configModules)
 	})
 	.flat();
 
+// Update each route in mainRoutes to bypass auth
+const updatedMainRoutes = mainRoutes.map(route => ({
+	...route,
+	auth: null // Override auth to null for all routes
+}));
+
 const routes: FuseRoutesType = [
 	{
 		path: '/',
 		element: <App />,
-		auth: settingsConfig.defaultAuth,
+		auth: null, // Changed from settingsConfig.defaultAuth to null
 		errorElement: <ErrorBoundary />,
 		children: [
 			{
 				path: '/',
-				element: <Navigate to="/example" />
+				element: <Navigate to="/example" />,
+				auth: null // Ensure the redirect is also not auth protected
 			},
-			...mainRoutes,
+			...updatedMainRoutes, // Use the updated routes with auth: null
 			{
 				path: 'loading',
 				element: <FuseLoading />,
-				settings: { layout: layoutConfigOnlyMain }
+				settings: { layout: layoutConfigOnlyMain },
+				auth: null // Set auth to null
 			},
 			{
 				path: '401',
-				element: <Error401Page />
+				element: <Error401Page />,
+				auth: null // Set auth to null
 			},
 			{
 				path: '404',
@@ -52,7 +61,8 @@ const routes: FuseRoutesType = [
 	},
 	{
 		path: '*',
-		element: <Navigate to="/404" />
+		element: <Navigate to="/404" />,
+		auth: null // Set auth to null
 	}
 ];
 
