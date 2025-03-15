@@ -1,48 +1,43 @@
 import Divider from '@mui/material/Divider';
 import { memo } from 'react';
 import GlobalStyles from '@mui/material/GlobalStyles';
+import navigationConfig from 'src/configs/navigationConfig'; // Import navigationConfig.ts
 import FuseNavHorizontalLayout1 from './horizontal/FuseNavHorizontalLayout1';
 import FuseNavVerticalLayout1 from './vertical/FuseNavVerticalLayout1';
 import FuseNavVerticalLayout2 from './vertical/FuseNavVerticalLayout2';
-import FuseNavHorizontalCollapse from './horizontal/types/FuseNavHorizontalCollapse';
-import FuseNavHorizontalGroup from './horizontal/types/FuseNavHorizontalGroup';
-import FuseNavHorizontalItem from './horizontal/types/FuseNavHorizontalItem';
-import FuseNavHorizontalLink from './horizontal/types/FuseNavHorizontalLink';
-import FuseNavVerticalCollapse from './vertical/types/FuseNavVerticalCollapse';
 import FuseNavVerticalGroup from './vertical/types/FuseNavVerticalGroup';
+import FuseNavVerticalCollapse from './vertical/types/FuseNavVerticalCollapse';
 import FuseNavVerticalItem from './vertical/types/FuseNavVerticalItem';
 import FuseNavVerticalLink from './vertical/types/FuseNavVerticalLink';
+import FuseNavHorizontalGroup from './horizontal/types/FuseNavHorizontalGroup';
+import FuseNavHorizontalCollapse from './horizontal/types/FuseNavHorizontalCollapse';
+import FuseNavHorizontalItem from './horizontal/types/FuseNavHorizontalItem';
+import FuseNavHorizontalLink from './horizontal/types/FuseNavHorizontalLink';
 import { FuseNavItemType } from './types/FuseNavItemType';
 import { registerComponent } from './utils/registerComponent';
 
 const inputGlobalStyles = (
 	<GlobalStyles
-		styles={() => ({
+		styles={{
 			'.popper-navigation-list': {
 				'& .fuse-list-item': {
-					padding: '8px 12px 8px 12px',
+					padding: '8px 12px',
 					height: 36,
 					minHeight: 36,
-					'& .fuse-list-item-text': {
-						padding: '0 0 0 8px'
-					}
+					'& .fuse-list-item-text': { padding: '0 0 0 8px' }
 				},
-				'&.dense': {
-					'& .fuse-list-item': {
-						minHeight: 32,
-						height: 32,
-						'& .fuse-list-item-text': {
-							padding: '0 0 0 8px'
-						}
-					}
+				'&.dense .fuse-list-item': {
+					minHeight: 32,
+					height: 32,
+					'& .fuse-list-item-text': { padding: '0 0 0 8px' }
 				}
 			}
-		})}
+		}}
 	/>
 );
 
-/*
-Register Fuse Navigation Components
+/**
+ * Register Fuse Navigation Components
  */
 registerComponent('vertical-group', FuseNavVerticalGroup);
 registerComponent('vertical-collapse', FuseNavVerticalCollapse);
@@ -60,7 +55,7 @@ export type FuseNavigationProps = {
 	className?: string;
 	dense?: boolean;
 	active?: boolean;
-	onItemClick?: (T: FuseNavItemType) => void;
+	onItemClick?: (item: FuseNavItemType) => void;
 	navigation?: FuseNavItemType[];
 	layout?: 'horizontal' | 'vertical' | 'vertical-2';
 	firstLevel?: boolean;
@@ -69,13 +64,14 @@ export type FuseNavigationProps = {
 };
 
 /**
- * FuseNavigation
- * Component for displaying a navigation bar which contains FuseNavItem components
- * and acts as parent for providing props to its children components
+ * FuseNavigation Component
+ * Renders navigation bar with FuseNavItem components.
  */
-function FuseNavigation(props: FuseNavigationProps) {
-	const { navigation, layout = 'vertical' } = props;
-
+function FuseNavigation({
+	navigation = navigationConfig, // ✅ Use `navigationConfig` by default
+	layout = 'vertical',
+	...props
+}: FuseNavigationProps) {
 	if (!navigation || navigation.length === 0) {
 		return null;
 	}
@@ -83,24 +79,9 @@ function FuseNavigation(props: FuseNavigationProps) {
 	return (
 		<>
 			{inputGlobalStyles}
-			{layout === 'horizontal' && (
-				<FuseNavHorizontalLayout1
-					checkPermission={false}
-					{...props}
-				/>
-			)}
-			{layout === 'vertical' && (
-				<FuseNavVerticalLayout1
-					checkPermission={false}
-					{...props}
-				/>
-			)}
-			{layout === 'vertical-2' && (
-				<FuseNavVerticalLayout2
-					checkPermission={false}
-					{...props}
-				/>
-			)}
+			{layout === 'horizontal' && <FuseNavHorizontalLayout1 checkPermission={false} {...props} navigation={navigation} />}
+			{layout === 'vertical' && <FuseNavVerticalLayout1 checkPermission={false} {...props} navigation={navigation} />}
+			{layout === 'vertical-2' && <FuseNavVerticalLayout2 checkPermission={false} {...props} navigation={navigation} />}
 		</>
 	);
 }

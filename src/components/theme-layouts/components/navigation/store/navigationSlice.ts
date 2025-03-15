@@ -4,85 +4,77 @@ import { PartialDeep } from 'type-fest';
 import { FuseFlatNavItemType, FuseNavItemType } from '@fuse/core/FuseNavigation/types/FuseNavItemType';
 import FuseNavigationHelper from '@fuse/utils/FuseNavigationHelper';
 import FuseNavItemModel from '@fuse/core/FuseNavigation/models/FuseNavItemModel';
-import navigationConfig from 'src/configs/navigationConfig';
+import navigationConfig from 'src/configs/navigationConfig'; // ✅ Ensure correct import
 
+// Initialize Entity Adapter for Navigation
 const navigationAdapter = createEntityAdapter<FuseFlatNavItemType>();
 
+// Ensure Initial State is Correct
 const emptyInitialState = navigationAdapter.getInitialState([]);
-
-const initialState = navigationAdapter.upsertMany(
-	emptyInitialState,
-	FuseNavigationHelper.flattenNavigation(navigationConfig)
-);
+const initialState = navigationConfig
+	? navigationAdapter.upsertMany(emptyInitialState, FuseNavigationHelper.flattenNavigation(navigationConfig))
+	: emptyInitialState;
 
 /**
- * Redux Thunk actions related to the navigation store state
+ * Redux Thunk Actions: Manage Sidebar Navigation State
  */
-/**
- * Appends a navigation item to the navigation store state.
- */
+
+// Append a navigation item
 export const appendNavigationItem =
 	(item: FuseNavItemType, parentId?: string | null): AppThunk =>
 	async (dispatch, getState) => {
-		const AppState = getState();
-		const navigation = FuseNavigationHelper.unflattenNavigation(selectNavigationAll(AppState));
+		const appState = getState();
+		const navigation = FuseNavigationHelper.unflattenNavigation(selectNavigationAll(appState));
 
 		dispatch(setNavigation(FuseNavigationHelper.appendNavItem(navigation, FuseNavItemModel(item), parentId)));
 
 		return Promise.resolve();
 	};
 
-/**
- * Prepends a navigation item to the navigation store state.
- */
+// Prepend a navigation item
 export const prependNavigationItem =
 	(item: FuseNavItemType, parentId?: string | null): AppThunk =>
 	async (dispatch, getState) => {
-		const AppState = getState();
-		const navigation = FuseNavigationHelper.unflattenNavigation(selectNavigationAll(AppState));
+		const appState = getState();
+		const navigation = FuseNavigationHelper.unflattenNavigation(selectNavigationAll(appState));
 
 		dispatch(setNavigation(FuseNavigationHelper.prependNavItem(navigation, FuseNavItemModel(item), parentId)));
 
 		return Promise.resolve();
 	};
 
-/**
- * Adds a navigation item to the navigation store state at the specified index.
- */
+// Update a navigation item
 export const updateNavigationItem =
 	(id: string, item: PartialDeep<FuseNavItemType>): AppThunk =>
 	async (dispatch, getState) => {
-		const AppState = getState();
-		const navigation = FuseNavigationHelper.unflattenNavigation(selectNavigationAll(AppState));
+		const appState = getState();
+		const navigation = FuseNavigationHelper.unflattenNavigation(selectNavigationAll(appState));
 
 		dispatch(setNavigation(FuseNavigationHelper.updateNavItem(navigation, id, item)));
 
 		return Promise.resolve();
 	};
 
-/**
- * Removes a navigation item from the navigation store state.
- */
+// Remove a navigation item
 export const removeNavigationItem =
 	(id: string): AppThunk =>
 	async (dispatch, getState) => {
-		const AppState = getState();
-		const navigation = FuseNavigationHelper.unflattenNavigation(selectNavigationAll(AppState));
+		const appState = getState();
+		const navigation = FuseNavigationHelper.unflattenNavigation(selectNavigationAll(appState));
 
 		dispatch(setNavigation(FuseNavigationHelper.removeNavItem(navigation, id)));
 
 		return Promise.resolve();
 	};
 
+// Redux Selectors for Navigation
 export const {
 	selectAll: selectNavigationAll,
 	selectIds: selectNavigationIds,
 	selectById: selectNavigationItemById
 } = navigationAdapter.getSelectors<RootState>((state) => state.navigation);
 
-/**
- * The navigation slice
- */
+// Create Redux Slice
 export const navigationSlice = createSlice({
 	name: 'navigation',
 	initialState,

@@ -1,1 +1,1 @@
-export { default } from './DemoContent';
+export { default } from './ExecutiveSummary'; // ✅ Ensures default export
