@@ -1,16 +1,25 @@
-import { http, HttpResponse } from 'msw';
+﻿import { http, HttpResponse } from 'msw';
 import { v4 as uuidv4 } from 'uuid';
 import mockDb from './mockDb.json';
 
+// Define a type for our mock database
+interface MockDatabase {
+  [key: string]: any[];
+}
+
 function getTable<T>(tableName: string): T[] {
-	if (!(mockDb as Record<string, unknown>)[tableName]) {
-		(mockDb as Record<string, unknown>)[tableName] = [];
+	// Use a proper type casting approach
+	const db = mockDb as unknown as MockDatabase;
+	if (!db[tableName]) {
+		db[tableName] = [];
 	}
-	return (mockDb as Record<string, T[]>)[tableName];
+	return db[tableName] as T[];
 }
 
 function saveTable<T>(tableName: string, items: T[]) {
-	(mockDb as Record<string, unknown>)[tableName] = items;
+	// Use a proper type casting approach
+	const db = mockDb as unknown as MockDatabase;
+	db[tableName] = items;
 }
 
 const mockApi = (tableName: string) => ({
@@ -72,6 +81,16 @@ const mockApi = (tableName: string) => ({
 });
 
 export const handlers = [
+	http.get('/api/example', () => {
+		return HttpResponse.json({ message: 'Example response' });
+	}),
+	
+	http.post('/api/login', async ({ request }) => {
+		const data = await request.json() as { email: string; password: string };
+		// Your login logic...
+		return HttpResponse.json({ token: 'mock-token' });
+	}),
+  
 	http.get('/api/mock/users', () => {
 		const users = getTable('users');
 		return HttpResponse.json(users);

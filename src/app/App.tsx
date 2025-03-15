@@ -11,15 +11,16 @@ import ErrorBoundary from '@fuse/utils/ErrorBoundary';
 import Authentication from '@auth/Authentication';
 import MainThemeProvider from '../contexts/MainThemeProvider';
 import store from '@/store/store';
-import routes from '@/configs/routesConfig';
+import { Outlet } from 'react-router-dom';
 import AppContext from '@/contexts/AppContext';
 
 /**
  * The main App component.
+ * Provides global state, authentication, and theming.
  */
 function App() {
 	const AppContextValue = {
-		routes
+		routes: [] // We don't pass routes here to avoid circular dependency
 	};
 
 	return (
@@ -48,7 +49,9 @@ function App() {
 												containerRoot: 'bottom-0 right-0 mb-52 md:mb-68 mr-8 lg:mr-80 z-99'
 											}}
 										>
-											<FuseLayout layouts={themeLayouts} />
+											<FuseLayout layouts={themeLayouts}>
+												<Outlet /> {/* This renders child routes */}
+											</FuseLayout>
 										</SnackbarProvider>
 									</MainThemeProvider>
 								</I18nProvider>

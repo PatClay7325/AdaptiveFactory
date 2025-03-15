@@ -79,9 +79,27 @@ function FuseNavigation({
 	return (
 		<>
 			{inputGlobalStyles}
-			{layout === 'horizontal' && <FuseNavHorizontalLayout1 checkPermission={false} {...props} navigation={navigation} />}
-			{layout === 'vertical' && <FuseNavVerticalLayout1 checkPermission={false} {...props} navigation={navigation} />}
-			{layout === 'vertical-2' && <FuseNavVerticalLayout2 checkPermission={false} {...props} navigation={navigation} />}
+			{layout === 'horizontal' && (
+				<FuseNavHorizontalLayout1
+					checkPermission={false}
+					{...props}
+					navigation={navigation}
+				/>
+			)}
+			{layout === 'vertical' && (
+				<FuseNavVerticalLayout1
+					checkPermission={false}
+					{...props}
+					navigation={navigation}
+				/>
+			)}
+			{layout === 'vertical-2' && (
+				<FuseNavVerticalLayout2
+					checkPermission={false}
+					{...props}
+					navigation={navigation}
+				/>
+			)}
 		</>
 	);
 }

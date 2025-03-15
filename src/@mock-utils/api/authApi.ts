@@ -11,263 +11,130 @@ import mockApi from '../mockApi';
 
 type UserAuthType = User & { password: string };
 
+// ✅ Setup JWT Secret Key
+const JWT_SECRET = 'some-secret-code-goes-here';
+
+// ✅ Helper: Base64 URL Encoding
+function base64url(source: CryptoJS.lib.WordArray) {
+	let encoded = Base64.stringify(source);
+	return encoded.replace(/=+$/, '').replace(/\+/g, '-').replace(/\//g, '_');
+}
+
+// ✅ Generate JWT Token
+function generateJWTToken(payload: Record<string, unknown>) {
+	const iat = Math.floor(Date.now() / 1000);
+	const exp = iat + 7 * 24 * 60 * 60; // 7 days
+
+	const header = base64url(Utf8.parse(JSON.stringify({ alg: 'HS256', typ: 'JWT' })));
+	const body = base64url(Utf8.parse(JSON.stringify({ iat, iss: 'Fuse', exp, ...payload })));
+	const signature = base64url(HmacSHA256(`${header}.${body}`, JWT_SECRET));
+
+	return `${header}.${body}.${signature}`;
+}
+
+// ✅ Verify JWT Token
+function verifyJWTToken(token: string): boolean {
+	const parts = token.split('.');
+	if (parts.length !== 3) return false;
+
+	const [header, body, signature] = parts;
+	const expectedSignature = base64url(HmacSHA256(`${header}.${body}`, JWT_SECRET));
+
+	return signature === expectedSignature;
+}
+
+// ✅ Generate Access Token
+async function generateAccessToken(request: Request): Promise<{ access_token: string; user: User } | null> {
+	const authHeader = request.headers.get('Authorization');
+	if (!authHeader || !authHeader.startsWith('Bearer ')) return null;
+
+	const token = authHeader.split(' ')[1];
+	if (!verifyJWTToken(token)) return null;
+
+	const { id }: { id: string } = jwtDecode(token);
+	const user = await mockApi('users').find(id) as User | undefined;
+
+	if (user) {
+		delete user.password;
+		return { access_token: generateJWTToken({ id: user.id }), user };
+	}
+
+	return null;
+}
+
+// ✅ Mock Authentication API
 const authApi = [
 	http.post('/api/mock/auth/refresh', async ({ request }) => {
-		const newTokenResponse = await generateAccessToken(request);
-
-		if (newTokenResponse) {
-			const { access_token } = newTokenResponse;
-
-			return HttpResponse.json(null, { status: 200, headers: { 'New-Access-Token': access_token } });
+		const tokenData = await generateAccessToken(request);
+		if (tokenData) {
+			return HttpResponse.json(null, { status: 200, headers: { 'New-Access-Token': tokenData.access_token } });
 		}
-
-		const error = 'Invalid access token detected or user not found';
-
-		return HttpResponse.json({ error }, { status: 401 });
+		return HttpResponse.json({ error: 'Invalid or expired token' }, { status: 401 });
 	}),
 
 	http.get('/api/mock/auth/sign-in-with-token', async ({ request }) => {
-		const newTokenResponse = await generateAccessToken(request);
-
-		if (newTokenResponse) {
-			const { access_token, user } = newTokenResponse;
-			return HttpResponse.json(user, { status: 200, headers: { 'New-Access-Token': access_token } });
+		const tokenData = await generateAccessToken(request);
+		if (tokenData) {
+			return HttpResponse.json(tokenData.user, { status: 200, headers: { 'New-Access-Token': tokenData.access_token } });
 		}
-
-		const error = 'Invalid access token detected or user not found';
-
-		return HttpResponse.json({ error }, { status: 401 });
+		return HttpResponse.json({ error: 'Invalid or expired token' }, { status: 401 });
 	}),
 
 	http.post('/api/mock/auth/sign-in', async ({ request }) => {
 		const api = mockApi('users');
+		const { email, password } = await request.json() as { email: string; password: string };
 
-		const data = (await request.json()) as { email: string; password: string };
-
-		const { email, password } = data;
-		const foundUsers = await api.findAll({ email });
-		const user = foundUsers?.[0] as UserAuthType | undefined;
-
-		const error = [];
-
-		if (!user) {
-			error.push({
-				type: 'email',
-				message: 'Check your email address'
-			});
+		const user = await api.find({ email }) as UserAuthType | undefined;
+		if (!user || user.password !== password) {
+			return HttpResponse.json({ error: 'Invalid email or password' }, { status: 401 });
 		}
 
-		if (user && password === '') {
-			error.push({
-				type: 'password',
-				message: 'Check your password'
-			});
-		}
+		delete user.password;
+		const access_token = generateJWTToken({ id: user.id });
 
-		if (error.length === 0) {
-			delete user.password;
-
-			const access_token = generateJWTToken({ id: user.id });
-
-			const response = {
-				user,
-				access_token
-			};
-
-			return HttpResponse.json(response, { status: 200 });
-		}
-
-		return HttpResponse.json(error, { status: 404 });
+		return HttpResponse.json({ user, access_token }, { status: 200 });
 	}),
 
 	http.post('/api/mock/auth/sign-up', async ({ request }) => {
 		const api = mockApi('users');
-		const data = (await request.json()) as { displayName: string; password: string; email: string };
-		const { displayName, password, email } = data;
-		const isEmailExists = (await api.findAll({ email }))?.[0];
-		const error = [];
+		const { displayName, password, email } = await request.json() as { displayName: string; password: string; email: string };
 
-		if (isEmailExists) {
-			error.push({
-				type: 'email',
-				message: 'The email address is already in use'
-			});
+		if (await api.find({ email })) {
+			return HttpResponse.json({ error: 'Email already exists' }, { status: 400 });
 		}
 
-		if (error.length === 0) {
-			const newUser = UserModel({
-				role: ['admin'],
-				displayName,
-				photoURL: '/assets/images/avatars/Abbott.jpg',
-				email,
-				shortcuts: [],
-				settings: {}
-			});
+		const newUser = UserModel({ role: ['admin'], displayName, photoURL: '/assets/images/avatars/Abbott.jpg', email, shortcuts: [], settings: {} });
+		newUser.id = FuseUtils.generateGUID();
+		newUser.password = password;
 
-			newUser.id = FuseUtils.generateGUID();
-			newUser.password = password;
+		const createdUser = await api.create(newUser);
+		delete createdUser.password;
+		const access_token = generateJWTToken({ id: createdUser.id });
 
-			const user = await api.create(newUser);
-
-			delete user.password;
-
-			const access_token = generateJWTToken({ id: user.id });
-
-			const response = {
-				user,
-				access_token
-			};
-
-			return HttpResponse.json(response, { status: 200 });
-		}
-
-		return HttpResponse.json(error, { status: 404 });
+		return HttpResponse.json({ user: createdUser, access_token }, { status: 201 });
 	}),
 
 	http.get('/api/mock/auth/user/:id', async ({ params }) => {
-		const api = mockApi('users');
-		const { id } = params as Record<string, string>;
-		const item = await api.find(id);
-
-		if (!item) {
-			return HttpResponse.json({ message: 'User not found' }, { status: 404 });
-		}
-
-		return HttpResponse.json(item);
+		const user = await mockApi('users').find(params.id as string);
+		return user ? HttpResponse.json(user) : HttpResponse.json({ error: 'User not found' }, { status: 404 });
 	}),
 
 	http.get('/api/mock/auth/user-by-email/:email', async ({ params }) => {
-		const api = mockApi('users');
-		const { email } = params as Record<string, string>;
-		const item = await api.find({ email });
-
-		if (!item) {
-			return HttpResponse.json({ message: 'User not found' }, { status: 404 });
-		}
-
-		return HttpResponse.json(item);
+		const user = await mockApi('users').find({ email: params.email });
+		return user ? HttpResponse.json(user) : HttpResponse.json({ error: 'User not found' }, { status: 404 });
 	}),
 
 	http.put('/api/mock/auth/user/:id', async ({ params, request }) => {
-		const api = mockApi('users');
-		const { id } = params as Record<string, string>;
+		const data = await request.json() as { user: PartialDeep<UserAuthType> };
+		const updatedUser = await mockApi('users').update(params.id as string, data);
 
-		const data = (await request.json()) as { user: PartialDeep<UserAuthType> };
-
-		const updatedUser = await api.update(id, data);
+		if (!updatedUser) {
+			return HttpResponse.json({ error: 'User update failed' }, { status: 400 });
+		}
 
 		delete (updatedUser as Partial<UserAuthType>).password;
-
 		return HttpResponse.json(updatedUser);
 	})
 ];
 
 export default authApi;
-
-/**
- * JWT Token Generator/Verifier Helpers
- * !! Created for Demonstration Purposes, cannot be used for PRODUCTION
- */
-
-const jwtSecret = 'some-secret-code-goes-here';
-
-/* eslint-disable */
-
-function base64url(source: CryptoJS.lib.WordArray) {
-	// Encode in classical base64
-	let encodedSource = Base64.stringify(source);
-
-	// Remove padding equal characters
-	encodedSource = encodedSource.replace(/=+$/, '');
-
-	// Replace characters according to base64url specifications
-	encodedSource = encodedSource.replace(/\+/g, '-');
-	encodedSource = encodedSource.replace(/\//g, '_');
-
-	// Return the base64 encoded string
-	return encodedSource;
-}
-
-function generateJWTToken(tokenPayload: { [key:string]: unknown } ) {
-	// Define token header
-	const header = {
-		alg: 'HS256',
-		typ: 'JWT'
-	};
-
-	// Calculate the issued at and expiration dates
-	const date = new Date();
-	const iat = Math.floor(date.getTime() / 1000);
-	const exp = Math.floor(date.setDate(date.getDate() + 7) / 1000);
-
-	// Define token payload
-	const payload: unknown = {
-		iat,
-		iss: 'Fuse',
-		exp,
-		...tokenPayload
-	};
-
-	// Stringify and encode the header
-	const stringifiedHeader = Utf8.parse(JSON.stringify(header));
-	const encodedHeader = base64url(stringifiedHeader);
-
-	// Stringify and encode the payload
-	const stringifiedPayload = Utf8.parse(JSON.stringify(payload));
-	const encodedPayload = base64url(stringifiedPayload);
-
-	// Sign the encoded header and mock-api
-	let signature = `${encodedHeader}.${encodedPayload}`;
-	// @ts-ignore
-	signature = HmacSHA256(signature, jwtSecret);
-	// @ts-ignore
-	signature = base64url(signature);
-
-	// Build and return the token
-	return `${encodedHeader}.${encodedPayload}.${signature}`;
-}
-
-function verifyJWTToken(token: string) {
-	// Split the token into parts
-	const parts = token.split('.');
-	const header = parts[0];
-	const payload = parts[1];
-	const signature = parts[2];
-
-	// Re-sign and encode the header and payload using the secret
-	const signatureCheck = base64url(HmacSHA256(`${header}.${payload}`, jwtSecret));
-
-	// Verify that the resulting signature is valid
-	return signature === signatureCheck;
-}
-
-/**
- * Generate Access Token
- */
-async function generateAccessToken(request: Request): Promise<{ access_token: string; user: User } | null> {
-	const authHeader = request.headers.get('Authorization') as string;
-
-	if (!authHeader) {
-		return null;
-	}
-
-	const [scheme, access_token] = authHeader.split(' ');
-
-	if (scheme !== 'Bearer' || !access_token) {
-		return null;
-	}
-
-	if (verifyJWTToken(access_token)) {
-		const { id }: { id: string } = jwtDecode(access_token);
-
-		const user = await mockApi('users').find(id) as User | undefined;
-
-		if (user) {
-			delete user.password;
-			const access_token = generateJWTToken({ id: user.id });
-			return { access_token, user };
-		}
-	}
-
-	return null;
-}

@@ -18,7 +18,7 @@ export type FuseRouteMatchType = RouteMatch & {
  * @returns The merged or replaced parameter data of type T
  */
 export function getFuseRouteParamUtil<T>(pathname: string, key: keyof FuseRouteObjectType, useMerge = true): T {
-	const matchedRoutes = matchRoutes(routes, pathname) as FuseRouteMatchType[] | null;
+	const matchedRoutes = matchRoutes(routes instanceof Array ? routes : [], pathname) as FuseRouteMatchType[] | null;
 
 	return matchedRoutes
 		? matchedRoutes.reduce((acc, match) => {

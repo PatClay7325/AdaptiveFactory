@@ -3,7 +3,6 @@ import react from '@vitejs/plugin-react';
 import svgrPlugin from 'vite-plugin-svgr';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
-// https://vitejs.dev/config/
 export default defineConfig({
 	plugins: [
 		react({
@@ -26,7 +25,22 @@ export default defineConfig({
 		}
 	],
 	build: {
-		outDir: 'build'
+		outDir: 'build',
+		sourcemap: true, // ✅ Enables debugging in production
+		rollupOptions: {
+			output: {
+				manualChunks(id) {
+					// ✅ Automatically split large modules
+					if (id.includes('node_modules')) {
+						if (id.includes('@emotion')) return 'vendor_emotion';
+						if (id.includes('@mui')) return 'vendor_ui';
+						if (id.includes('lodash')) return 'vendor_lodash';
+						return 'vendor';
+					}
+				}
+			}
+		},
+		chunkSizeWarningLimit: 1500 // ✅ Prevent chunk warnings
 	},
 	server: {
 		host: '0.0.0.0',
@@ -55,15 +69,14 @@ export default defineConfig({
 	},
 	optimizeDeps: {
 		include: [
+			'@emotion/react', // ✅ Ensures Emotion is loaded first
+			'@emotion/styled',
 			'@mui/icons-material',
 			'@mui/material',
 			'@mui/base',
 			'@mui/styles',
 			'@mui/system',
 			'@mui/utils',
-			'@emotion/cache',
-			'@emotion/react',
-			'@emotion/styled',
 			'date-fns',
 			'lodash'
 		],

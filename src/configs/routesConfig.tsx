@@ -7,12 +7,18 @@ import App from '@/app/App';
 import Error404Page from '@/app/(public)/404/Error404Page';
 import Error401Page from '@/app/(public)/401/Error401Page';
 
-// ✅ Lazy load Executive Summary (Default Page)
+// ✅ Lazy load components
 const ExecutiveSummary = lazy(() => import('@fuse/core/DemoContent/ExecutiveSummary'));
+const Dashboard = lazy(() => import('@/pages/Dashboard'));
+const AIInsights = lazy(() => import('@/pages/AIInsights'));
+const Alerts = lazy(() => import('@/pages/Alerts'));
+const CustomDashboards = lazy(() => import('@/pages/CustomDashboards'));
+const SavedViews = lazy(() => import('@/pages/SavedViews'));
+const SharedDashboards = lazy(() => import('@/pages/SharedDashboards'));
+const NotFound = lazy(() => import('@/pages/NotFound'));
 
 // ✅ Dynamically Import All Route Files
 const configModules: Record<string, unknown> = import.meta.glob('/src/app/**/*Route.tsx', { eager: true });
-
 const mainRoutes: FuseRouteConfigType[] = Object.keys(configModules)
 	.map((modulePath) => {
 		const moduleConfigs = (configModules[modulePath] as { default: FuseRouteConfigType | FuseRouteConfigType[] }).default;
@@ -26,6 +32,7 @@ const updatedMainRoutes = mainRoutes.map(route => ({
 	auth: null // Override auth to null for all routes
 }));
 
+// ✅ Define routes structure
 const routes: FuseRoutesType = [
 	{
 		path: '/',
@@ -44,6 +51,60 @@ const routes: FuseRoutesType = [
 				element: (
 					<Suspense fallback={<FuseLoading />}>
 						<ExecutiveSummary />
+					</Suspense>
+				),
+				auth: null
+			},
+			{
+				path: 'dashboard',
+				element: (
+					<Suspense fallback={<FuseLoading />}>
+						<Dashboard />
+					</Suspense>
+				),
+				auth: null
+			},
+			{
+				path: 'ai-insights',
+				element: (
+					<Suspense fallback={<FuseLoading />}>
+						<AIInsights />
+					</Suspense>
+				),
+				auth: null
+			},
+			{
+				path: 'alerts',
+				element: (
+					<Suspense fallback={<FuseLoading />}>
+						<Alerts />
+					</Suspense>
+				),
+				auth: null
+			},
+			{
+				path: 'custom-dashboards',
+				element: (
+					<Suspense fallback={<FuseLoading />}>
+						<CustomDashboards />
+					</Suspense>
+				),
+				auth: null
+			},
+			{
+				path: 'saved-views',
+				element: (
+					<Suspense fallback={<FuseLoading />}>
+						<SavedViews />
+					</Suspense>
+				),
+				auth: null
+			},
+			{
+				path: 'shared-dashboards',
+				element: (
+					<Suspense fallback={<FuseLoading />}>
+						<SharedDashboards />
 					</Suspense>
 				),
 				auth: null

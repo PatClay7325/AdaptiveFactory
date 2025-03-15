@@ -4,9 +4,10 @@ import './styles/app-components.css';
 import './styles/app-utilities.css';
 import { createRoot } from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router';
-import routes from 'src/configs/routesConfig';
+import routes from '@/configs/routesConfig';
 import { worker } from '@mock-utils/mswMockAdapter';
 import { API_BASE_URL } from '@/utils/apiFetch';
+import { Suspense } from 'react';
 
 /**
  * The root element of the application.
@@ -14,37 +15,53 @@ import { API_BASE_URL } from '@/utils/apiFetch';
 const container = document.getElementById('app');
 
 if (!container) {
-  throw new Error('Failed to find the root element');
+	console.error('❌ Failed to find the root element.');
+	throw new Error('Root element not found.');
 }
 
-// Initialize app with or without mock API based on environment
-const initApp = async () => {
-  // Only setup mocks in development environment
-  if (import.meta.env.DEV || import.meta.env.MODE === 'development') {
-    await worker.start({
-      onUnhandledRequest: 'bypass',
-      serviceWorker: {
-        url: `${API_BASE_URL}/mockServiceWorker.js`
-      }
-    });
-  }
+// ✅ Ensure `routes` is valid, fallback to NotFound page
+const safeRoutes = Array.isArray(routes) && routes.length > 0
+	? routes
+	: [{ path: '*', element: <h1 style={{ textAlign: 'center', marginTop: '50px' }}>404 - Page Not Found</h1> }];
 
-  /**
-   * The root component of the application.
-   */
-  const root = createRoot(container, {
-    onUncaughtError: (error, errorInfo) => {
-      console.error('UncaughtError error', error, errorInfo.componentStack);
-    },
-    onCaughtError: (error, errorInfo) => {
-      console.error('Caught error', error, errorInfo.componentStack);
-    }
-  });
-
-  const router = createBrowserRouter(routes);
-
-  root.render(<RouterProvider router={router} />);
+// ✅ Initialize Mock API (Only in Development)
+const initMockAPI = async () => {
+	if (import.meta.env.DEV && worker) {
+		try {
+			await worker.start({
+				onUnhandledRequest: 'bypass',
+				serviceWorker: {
+					url: `${API_BASE_URL || ''}/mockServiceWorker.js`
+				}
+			});
+			console.info('✅ MSW Mock API started.');
+		} catch (err) {
+			console.error('❌ MSW initialization failed:', err);
+		}
+	} else {
+		console.info('ℹ️ MSW is disabled in production.');
+	}
 };
 
-// Start the application
+// ✅ Initialize Application
+const initApp = async () => {
+	try {
+		await initMockAPI();
+
+		// ✅ Ensure `createRoot` is only called once
+		const root = createRoot(container);
+
+		const router = createBrowserRouter(safeRoutes);
+
+		root.render(
+			<Suspense fallback={<h1 style={{ textAlign: 'center', marginTop: '50px' }}>Loading...</h1>}>
+				<RouterProvider router={router} />
+			</Suspense>
+		);
+	} catch (err) {
+		console.error('❌ Application initialization failed:', err);
+	}
+};
+
+// 🚀 Start Application
 initApp();

@@ -1,0 +1,14 @@
+{
+  "users": [
+    {
+      "id": "XTCy4vK6qLT1PxBQQB9W",
+      "role": ["admin"],
+      "displayName": "Admin User",
+      "photoURL": "/assets/images/avatars/Abbott.jpg",
+      "email": "admin@example.com",
+      "password": "admin",
+      "settings": {},
+      "shortcuts": []
+    }
+  ]
+}
