@@ -1,27 +1,47 @@
 import { lazy, Suspense } from 'react';
 import { FuseRouteConfigType, FuseRoutesType } from '@fuse/utils/FuseUtils';
+
+interface LocalFuseRouteConfigType {
+  path: string;
+  element?: React.ReactNode;
+  children?: LocalFuseRouteConfigType[];
+  auth?: any;
+  errorElement?: React.ReactNode;
+}
+
+interface CustomFuseRouteConfigType {
+  path: string;
+  element?: React.ReactNode;
+  children?: CustomFuseRouteConfigType[];
+  auth?: any;
+  errorElement?: React.ReactNode;
+}
 import { Navigate } from 'react-router';
 import FuseLoading from '@fuse/core/FuseLoading';
 import ErrorBoundary from '@fuse/utils/ErrorBoundary';
-import App from '@/app/App';
-import Error404Page from '@/app/(public)/404/Error404Page';
-import Error401Page from '@/app/(public)/401/Error401Page';
+import App from 'src/app/App';
+import Error404Page from 'src/app/(public)/404/Error404Page';
+import Error401Page from 'src/app/(public)/401/Error401Page';
 
 // ✅ Lazy load components
 const ExecutiveSummary = lazy(() => import('@fuse/core/DemoContent/ExecutiveSummary'));
-const Dashboard = lazy(() => import('@/pages/Dashboard'));
-const AIInsights = lazy(() => import('@/pages/AIInsights'));
-const Alerts = lazy(() => import('@/pages/Alerts'));
-const CustomDashboards = lazy(() => import('@/pages/CustomDashboards'));
-const SavedViews = lazy(() => import('@/pages/SavedViews'));
-const SharedDashboards = lazy(() => import('@/pages/SharedDashboards'));
-const NotFound = lazy(() => import('@/pages/NotFound'));
+const Dashboard = lazy(() => import('src/pages/Dashboard'));
+const AIInsights = lazy(() => import('src/pages/AIInsights'));
+const Alerts = lazy(() => import('src/pages/Alerts'));
+const CustomDashboards = lazy(() => import('src/pages/CustomDashboards'));
+const SavedViews = lazy(() => import('src/pages/SavedViews'));
+const SharedDashboards = lazy(() => import('src/pages/SharedDashboards'));
+const NotFound = lazy(() => import('src/pages/NotFound'));
+
+// ✅ Lazy load Supabase components
+const SupabaseLogin = lazy(() => import('src/app/supabase/SupabaseLogin'));
+const SupabaseDashboard = lazy(() => import('src/app/supabase/SupabaseDashboard'));
 
 // ✅ Dynamically Import All Route Files
 const configModules: Record<string, unknown> = import.meta.glob('/src/app/**/*Route.tsx', { eager: true });
-const mainRoutes: FuseRouteConfigType[] = Object.keys(configModules)
+const mainRoutes: CustomFuseRouteConfigType[] = Object.keys(configModules)
 	.map((modulePath) => {
-		const moduleConfigs = (configModules[modulePath] as { default: FuseRouteConfigType | FuseRouteConfigType[] }).default;
+		const moduleConfigs = (configModules[modulePath] as { default: CustomFuseRouteConfigType | CustomFuseRouteConfigType[] }).default;
 		return Array.isArray(moduleConfigs) ? moduleConfigs : [moduleConfigs];
 	})
 	.flat();
@@ -31,6 +51,38 @@ const updatedMainRoutes = mainRoutes.map(route => ({
 	...route,
 	auth: null // Override auth to null for all routes
 }));
+
+// ✅ Define Supabase routes
+const supabaseRoutes: LocalFuseRouteConfigType[] = [
+	{
+		path: 'supabase',
+		children: [
+			{
+				path: '',
+				element: <Navigate to="login" />,
+				auth: null
+			},
+			{
+				path: 'login',
+				element: (
+					<Suspense fallback={<FuseLoading />}>
+						<SupabaseLogin />
+					</Suspense>
+				),
+				auth: null
+			},
+			{
+				path: 'dashboard',
+				element: (
+					<Suspense fallback={<FuseLoading />}>
+						<SupabaseDashboard />
+					</Suspense>
+				),
+				auth: null
+			}
+		]
+	}
+];
 
 // ✅ Define routes structure
 const routes: FuseRoutesType = [
@@ -46,6 +98,7 @@ const routes: FuseRoutesType = [
 				auth: null
 			},
 			...updatedMainRoutes, // ✅ Include dynamically imported routes
+			...supabaseRoutes, // ✅ Include Supabase routes
 			{
 				path: 'dashboard/executive-summary', // ✅ Executive Summary route
 				element: (

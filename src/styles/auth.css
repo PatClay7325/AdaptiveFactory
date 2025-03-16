@@ -1,0 +1,114 @@
+/* Auth styles */
+.auth-container {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .form-widget {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .header {
+    margin-bottom: 12px;
+    color: #3e3e3e;
+  }
+  
+  .description {
+    margin-bottom: 24px;
+    color: #666;
+  }
+  
+  .inputField {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    width: 100%;
+  }
+  
+  .button {
+    background-color: #3ecf8e;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.2s;
+  }
+  
+  .button:hover {
+    background-color: #36b97f;
+  }
+  
+  .button.block {
+    display: block;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  
+  .button.primary {
+    background-color: #3b82f6;
+  }
+  
+  .button.primary:hover {
+    background-color: #2563eb;
+  }
+  
+  .button.secondary {
+    background-color: #6b7280;
+  }
+  
+  .button.secondary:hover {
+    background-color: #4b5563;
+  }
+  
+  .button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+  }
+  
+  /* Profile styles */
+  .profile-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .profile-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .profile-header h2 {
+    margin: 0;
+    margin-right: 10px;
+  }
+  
+  .admin-badge {
+    background-color: #3b82f6;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    text-transform: uppercase;
+  }
+  
+  select {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    width: 100%;
+    background-color: white;
+  }

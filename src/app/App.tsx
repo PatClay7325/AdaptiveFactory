@@ -8,11 +8,12 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3';
 import { enUS } from 'date-fns/locale/en-US';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import ErrorBoundary from '@fuse/utils/ErrorBoundary';
-import Authentication from '@auth/Authentication';
+// Import the combined authentication
+import AuthenticationWithSupabase from '@auth/AuthenticationWithSupabase';
 import MainThemeProvider from '../contexts/MainThemeProvider';
-import store from '@/store/store';
+import store from 'src/store/store';
 import { Outlet } from 'react-router-dom';
-import AppContext from '@/contexts/AppContext';
+import AppContext from 'src/contexts/AppContext';
 
 /**
  * The main App component.
@@ -33,7 +34,8 @@ function App() {
 				>
 					{/* Redux Store Provider */}
 					<Provider store={store}>
-						<Authentication>
+						{/* Updated to use the combined authentication */}
+						<AuthenticationWithSupabase>
 							<FuseSettingsProvider>
 								<I18nProvider>
 									{/* Theme Provider */}
@@ -56,7 +58,7 @@ function App() {
 									</MainThemeProvider>
 								</I18nProvider>
 							</FuseSettingsProvider>
-						</Authentication>
+						</AuthenticationWithSupabase>
 					</Provider>
 				</LocalizationProvider>
 			</AppContext>
