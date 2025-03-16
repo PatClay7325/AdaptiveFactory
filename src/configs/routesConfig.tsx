@@ -24,7 +24,8 @@ import Error404Page from 'src/app/(public)/404/Error404Page';
 import Error401Page from 'src/app/(public)/401/Error401Page';
 
 // ✅ Lazy load components
-const ExecutiveSummary = lazy(() => import('@fuse/core/DemoContent/ExecutiveSummary'));
+// Replace the demo content with our actual implementation
+const ExecutiveSummary = lazy(() => import('src/pages/dashboard/executive-summary'));
 const Dashboard = lazy(() => import('src/pages/Dashboard'));
 const AIInsights = lazy(() => import('src/pages/AIInsights'));
 const Alerts = lazy(() => import('src/pages/Alerts'));
@@ -33,6 +34,12 @@ const SavedViews = lazy(() => import('src/pages/SavedViews'));
 const SharedDashboards = lazy(() => import('src/pages/SharedDashboards'));
 const NotFound = lazy(() => import('src/pages/NotFound'));
 
+// ✅ Add API Test page
+const ApiTest = lazy(() => import('src/pages/api-test'));
+
+// ✅ Add API Documentation page
+// ✅ Add API Documentation page
+const ApiDocumentation = lazy(() => import('src/pages/admin/api-documentation/page'));
 // ✅ Lazy load Supabase components
 const SupabaseLogin = lazy(() => import('src/app/supabase/SupabaseLogin'));
 const SupabaseDashboard = lazy(() => import('src/app/supabase/SupabaseDashboard'));
@@ -158,6 +165,26 @@ const routes: FuseRoutesType = [
 				element: (
 					<Suspense fallback={<FuseLoading />}>
 						<SharedDashboards />
+					</Suspense>
+				),
+				auth: null
+			},
+			// ✅ Add API Documentation route
+			{
+				path: 'admin/api-documentation',
+				element: (
+					<Suspense fallback={<FuseLoading />}>
+						<ApiDocumentation />
+					</Suspense>
+				),
+				auth: null
+			},
+			// ✅ Add API Test route
+			{
+				path: 'api-test',
+				element: (
+					<Suspense fallback={<FuseLoading />}>
+						<ApiTest />
 					</Suspense>
 				),
 				auth: null

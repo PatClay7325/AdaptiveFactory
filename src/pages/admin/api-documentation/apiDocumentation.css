@@ -1,0 +1,108 @@
+/* src/pages/admin/api-documentation/apiDocumentation.css */
+
+.markdown-container pre {
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 16px 0;
+  overflow-x: auto;
+}
+
+.markdown-container code {
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 0.9em;
+}
+
+.markdown-container p {
+  margin-bottom: 16px;
+  line-height: 1.6;
+}
+
+.markdown-container h1 {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-top: 32px;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.markdown-container h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-top: 32px;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.markdown-container h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-top: 24px;
+  margin-bottom: 16px;
+}
+
+.markdown-container ul,
+.markdown-container ol {
+  padding-left: 24px;
+  margin-bottom: 16px;
+}
+
+.markdown-container li {
+  margin-bottom: 8px;
+}
+
+.markdown-container a {
+  color: #2196f3;
+  text-decoration: none;
+}
+
+.markdown-container a:hover {
+  text-decoration: underline;
+}
+
+.markdown-container blockquote {
+  padding-left: 16px;
+  margin-left: 0;
+  border-left: 4px solid #e0e0e0;
+  color: #757575;
+}
+
+.markdown-container table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 24px 0;
+}
+
+.markdown-container table th {
+  background-color: #f5f5f5;
+  font-weight: 600;
+  text-align: left;
+  padding: 12px;
+  border: 1px solid #e0e0e0;
+}
+
+.markdown-container table td {
+  padding: 12px;
+  border: 1px solid #e0e0e0;
+}
+
+.markdown-container img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+  margin: 16px 0;
+}
+
+.markdown-container hr {
+  margin: 24px 0;
+  border: 0;
+  border-top: 1px solid #e0e0e0;
+}
+
+/* For sticky TOC */
+.sticky {
+  position: sticky;
+  top: 80px;
+}
