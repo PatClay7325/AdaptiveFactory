@@ -94,7 +94,7 @@ const routes: FuseRoutesType = [
 		children: [
 			{
 				path: '/',
-				element: <Navigate to="/dashboard/executive-summary" />, // ✅ Redirect to Default Page
+				element: <Navigate to="/supabase/login" />, // ✅ Redirect to Supabase Login Page
 				auth: null
 			},
 			...updatedMainRoutes, // ✅ Include dynamically imported routes

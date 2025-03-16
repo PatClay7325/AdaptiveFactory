@@ -1,5 +1,4 @@
-// src/app/supabase/SupabaseLogin.tsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Paper from '@mui/material/Paper';
@@ -7,19 +6,19 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-// Remove history import
 import { useSupabaseAuth } from '@auth/SupabaseAuthProvider';
 import { useAppDispatch } from 'src/store/hooks';
 import { showMessage } from '@fuse/core/FuseMessage/fuseMessageSlice';
 
 const SupabaseLogin = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
+  // Pre-fill with admin credentials for development
+  const [email, setEmail] = useState<string>('admin@aimanufacturing.com');
+  const [password, setPassword] = useState<string>('Otobale3');
+  const [loading, setLoading] = useState<boolean>(false);
   const { signIn } = useSupabaseAuth();
   const dispatch = useAppDispatch();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     
     try {
@@ -35,7 +34,6 @@ const SupabaseLogin = () => {
         })
       );
       
-      // Simple redirect instead of history push
       window.location.href = '/supabase/dashboard';
     } catch (error: any) {
       dispatch(
@@ -49,7 +47,18 @@ const SupabaseLogin = () => {
     }
   };
 
-  // Add a test connection button
+  // Function for dev auto-login button
+  const handleDevLogin = () => {
+    // Use the pre-filled credentials
+    handleSignIn(new Event('submit') as any);
+  };
+
+  // Auto-login functionality
+  useEffect(() => {
+    // Uncomment the line below if you want auto-login on page load
+    // handleDevLogin();
+  }, []);
+
   const testConnection = async () => {
     try {
       dispatch(
@@ -115,7 +124,7 @@ const SupabaseLogin = () => {
             <Typography component="h2" variant="h5">
               Sign in with Supabase
             </Typography>
-            <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
+            <Box component="form" noValidate onSubmit={handleSignIn} sx={{ mt: 1 }}>
               <TextField
                 margin="normal"
                 required
@@ -150,36 +159,26 @@ const SupabaseLogin = () => {
                 {loading ? 'Signing In...' : 'Sign In'}
               </Button>
               
-              {/* Add test connection button */}
+              {/* Quick dev login button */}
+              <Button 
+                fullWidth
+                variant="contained"
+                color="secondary"
+                onClick={handleDevLogin}
+                sx={{ mb: 2 }}
+              >
+                Quick Dev Login
+              </Button>
+              
+              {/* Test connection button */}
               <Button 
                 fullWidth
                 variant="outlined" 
                 onClick={testConnection}
-                sx={{ mt: 2, mb: 2 }}
+                sx={{ mb: 2 }}
               >
                 Test Supabase Connection
               </Button>
-              
-              <Grid container>
-                <Grid item xs>
-                  {/* Use button instead of link */}
-                  <Button
-                    sx={{ textTransform: 'none', p: 0 }}
-                    onClick={() => window.location.href = '/forgot-password'}
-                  >
-                    Forgot password?
-                  </Button>
-                </Grid>
-                <Grid item>
-                  {/* Use button instead of link */}
-                  <Button
-                    sx={{ textTransform: 'none', p: 0 }}
-                    onClick={() => window.location.href = '/supabase/register'}
-                  >
-                    Don't have an account? Sign Up
-                  </Button>
-                </Grid>
-              </Grid>
             </Box>
           </Box>
         </Grid>
