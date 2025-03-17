@@ -16,6 +16,7 @@ interface CustomFuseRouteConfigType {
   auth?: any;
   errorElement?: React.ReactNode;
 }
+
 import { Navigate } from 'react-router';
 import FuseLoading from '@fuse/core/FuseLoading';
 import ErrorBoundary from '@fuse/utils/ErrorBoundary';
@@ -24,7 +25,6 @@ import Error404Page from 'src/app/(public)/404/Error404Page';
 import Error401Page from 'src/app/(public)/401/Error401Page';
 
 // ✅ Lazy load components
-// Replace the demo content with our actual implementation
 const ExecutiveSummary = lazy(() => import('src/pages/dashboard/executive-summary'));
 const Dashboard = lazy(() => import('src/pages/Dashboard'));
 const AIInsights = lazy(() => import('src/pages/AIInsights'));
@@ -33,18 +33,18 @@ const CustomDashboards = lazy(() => import('src/pages/CustomDashboards'));
 const SavedViews = lazy(() => import('src/pages/SavedViews'));
 const SharedDashboards = lazy(() => import('src/pages/SharedDashboards'));
 const NotFound = lazy(() => import('src/pages/NotFound'));
-// Add Cloud Monitoring page import
 const CloudMonitoring = lazy(() => import('src/pages/dashboard/cloud-monitoring'));
 
-// ✅ Add API Test page
+// ✅ Add API Documentation & Test pages
 const ApiTest = lazy(() => import('src/pages/api-test'));
-
-// ✅ Add API Documentation page
-// ✅ Add API Documentation page
 const ApiDocumentation = lazy(() => import('src/pages/admin/api-documentation/page'));
+
 // ✅ Lazy load Supabase components
 const SupabaseLogin = lazy(() => import('src/app/supabase/SupabaseLogin'));
 const SupabaseDashboard = lazy(() => import('src/app/supabase/SupabaseDashboard'));
+
+// ✅ Corrected Lazy Load for SettingsPage (previously DatabaseConfigPage)
+const SettingsPage = lazy(() => import('src/pages/SettingsPage'));
 
 // ✅ Dynamically Import All Route Files
 const configModules: Record<string, unknown> = import.meta.glob('/src/app/**/*Route.tsx', { eager: true });
@@ -109,7 +109,7 @@ const routes: FuseRoutesType = [
 			...updatedMainRoutes, // ✅ Include dynamically imported routes
 			...supabaseRoutes, // ✅ Include Supabase routes
 			{
-				path: 'dashboard/executive-summary', // ✅ Executive Summary route
+				path: 'dashboard/executive-summary',
 				element: (
 					<Suspense fallback={<FuseLoading />}>
 						<ExecutiveSummary />
@@ -117,7 +117,6 @@ const routes: FuseRoutesType = [
 				),
 				auth: null
 			},
-			// Add Cloud Monitoring route
 			{
 				path: 'dashboard/cloud-monitoring',
 				element: (
@@ -197,6 +196,16 @@ const routes: FuseRoutesType = [
 				element: (
 					<Suspense fallback={<FuseLoading />}>
 						<ApiTest />
+					</Suspense>
+				),
+				auth: null
+			},
+			// ✅ Add Database Configuration route (now using SettingsPage)
+			{
+				path: 'admin/settings/database-config',
+				element: (
+					<Suspense fallback={<FuseLoading />}>
+						<SettingsPage />
 					</Suspense>
 				),
 				auth: null

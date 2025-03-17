@@ -10,6 +10,7 @@ import routes from '@/configs/routesConfig';
 import { worker } from '@mock-utils/mswMockAdapter';
 import { API_BASE_URL } from '@/utils/apiFetch';
 import { Suspense } from 'react';
+import { http, HttpResponse } from 'msw'; // Add this import
 
 // Try to import datagrid CSS, but handle potential errors
 try {
@@ -38,6 +39,30 @@ const safeRoutes = Array.isArray(routes) && routes.length > 0
 const initMockAPI = async () => {
 	if (import.meta.env.DEV && worker) {
 		try {
+			// Add direct handlers for database endpoints
+			worker.use(
+				http.get('*/api/config', () => {
+					console.log('Direct handler: Intercepted GET to /api/config');
+					return HttpResponse.json({
+						DATABASE_URL: "postgresql://postgres:password@localhost:5432/my_local_db"
+					});
+				}),
+				http.post('*/api/config', async ({ request }) => {
+					console.log('Direct handler: Intercepted POST to /api/config');
+					const data = await request.json();
+					console.log('Config update data:', data);
+					return HttpResponse.json({
+						message: "Database configuration updated successfully"
+					});
+				}),
+				http.get('*/api/test-connection', () => {
+					console.log('Direct handler: Intercepted GET to /api/test-connection');
+					return HttpResponse.json({
+						status: "Connected"
+					});
+				})
+			);
+
 			await worker.start({
 				onUnhandledRequest: 'bypass',
 				serviceWorker: {

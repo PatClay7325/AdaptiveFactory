@@ -201,6 +201,13 @@ const navigationConfig: FuseNavItemType[] = [
 						title: 'System Updates',
 						type: 'item',
 						url: '/admin/settings/updates'
+					},
+					{
+						id: 'database-config',
+						title: 'Database Configuration',
+						type: 'item',
+						icon: 'heroicons-outline:server',
+						url: '/admin/settings/database-config'
 					}
 				]
 			}
@@ -856,5 +863,8 @@ const navigationConfig: FuseNavItemType[] = [
 	}
 ];
 
-export { navigationConfig };
+// First, declare the default export (this is critical for module resolution)
 export default navigationConfig;
+
+// Then provide the named export as well
+export { navigationConfig };
