@@ -1,0 +1,60 @@
+[
+    {
+      "InstanceId": "i-1234567890abcdef0",
+      "Details": [
+        {
+          "timestamp": 1710680400000,
+          "readOpt": 123,
+          "writeOpt": 456,
+          "networkIn": 7890,
+          "networkOut": 12345,
+          "cpuUtilization": 23.5
+        },
+        {
+          "timestamp": 1710684000000,
+          "readOpt": 135,
+          "writeOpt": 467,
+          "networkIn": 8200,
+          "networkOut": 13000,
+          "cpuUtilization": 25.2
+        },
+        {
+          "timestamp": 1710687600000,
+          "readOpt": 142,
+          "writeOpt": 472,
+          "networkIn": 7950,
+          "networkOut": 12800,
+          "cpuUtilization": 24.8
+        }
+      ]
+    },
+    {
+      "InstanceId": "i-0987654321fedcba0",
+      "Details": [
+        {
+          "timestamp": 1710680400000,
+          "readOpt": 234,
+          "writeOpt": 678,
+          "networkIn": 12500,
+          "networkOut": 18700,
+          "cpuUtilization": 45.2
+        },
+        {
+          "timestamp": 1710684000000,
+          "readOpt": 245,
+          "writeOpt": 690,
+          "networkIn": 13100,
+          "networkOut": 19200,
+          "cpuUtilization": 47.8
+        },
+        {
+          "timestamp": 1710687600000,
+          "readOpt": 230,
+          "writeOpt": 682,
+          "networkIn": 12800,
+          "networkOut": 18900,
+          "cpuUtilization": 46.5
+        }
+      ]
+    }
+  ]

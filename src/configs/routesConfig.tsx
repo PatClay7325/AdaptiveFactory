@@ -33,6 +33,8 @@ const CustomDashboards = lazy(() => import('src/pages/CustomDashboards'));
 const SavedViews = lazy(() => import('src/pages/SavedViews'));
 const SharedDashboards = lazy(() => import('src/pages/SharedDashboards'));
 const NotFound = lazy(() => import('src/pages/NotFound'));
+// Add Cloud Monitoring page import
+const CloudMonitoring = lazy(() => import('src/pages/dashboard/cloud-monitoring'));
 
 // ✅ Add API Test page
 const ApiTest = lazy(() => import('src/pages/api-test'));
@@ -111,6 +113,16 @@ const routes: FuseRoutesType = [
 				element: (
 					<Suspense fallback={<FuseLoading />}>
 						<ExecutiveSummary />
+					</Suspense>
+				),
+				auth: null
+			},
+			// Add Cloud Monitoring route
+			{
+				path: 'dashboard/cloud-monitoring',
+				element: (
+					<Suspense fallback={<FuseLoading />}>
+						<CloudMonitoring />
 					</Suspense>
 				),
 				auth: null

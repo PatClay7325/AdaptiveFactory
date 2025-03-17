@@ -2,12 +2,22 @@ import '@i18n/i18n';
 import './styles/app-base.css';
 import './styles/app-components.css';
 import './styles/app-utilities.css';
+// Import Highcharts Dashboards CSS
+import '@highcharts/dashboards/css/dashboards.css';
 import { createRoot } from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router';
 import routes from '@/configs/routesConfig';
 import { worker } from '@mock-utils/mswMockAdapter';
 import { API_BASE_URL } from '@/utils/apiFetch';
 import { Suspense } from 'react';
+
+// Try to import datagrid CSS, but handle potential errors
+try {
+  import('@highcharts/dashboards/css/datagrid.css')
+    .catch(e => console.warn('Could not load datagrid CSS:', e));
+} catch (e) {
+  console.warn('Error importing datagrid CSS', e);
+}
 
 /**
  * The root element of the application.

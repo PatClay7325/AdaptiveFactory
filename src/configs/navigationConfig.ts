@@ -14,6 +14,13 @@ const navigationConfig: FuseNavItemType[] = [
 				url: '/dashboard/executive-summary'
 			},
 			{
+				id: 'cloud-monitoring',
+				title: 'Cloud Monitoring',
+				type: 'item',
+				icon: 'heroicons-outline:cloud',
+				url: '/dashboard/cloud-monitoring'
+			},
+			{
 				id: 'ai-insights',
 				title: 'AI Insights',
 				type: 'item',

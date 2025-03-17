@@ -1,0 +1,48 @@
+[
+    {
+      "InstanceId": "i-1234567890abcdef0",
+      "InstanceType": "t2.micro",
+      "PublicIpAddress": "12.34.56.78",
+      "State": "running",
+      "Zone": "us-east-1a",
+      "AMI": "ami-12345678",
+      "OS": "Amazon Linux 2",
+      "HealthIndicator": "OK",
+      "CPUUtilization": 23.5,
+      "MemoryUsage": 1024,
+      "DiskSpace": {
+        "RootDisk": {
+          "SizeGB": 100,
+          "UsedGB": 45,
+          "FreeGB": 55,
+          "MediaGB": 20,
+          "RootGB": 15,
+          "Documents": 5,
+          "Downloads": 5
+        }
+      }
+    },
+    {
+      "InstanceId": "i-0987654321fedcba0",
+      "InstanceType": "t3.small",
+      "PublicIpAddress": "87.65.43.21",
+      "State": "running",
+      "Zone": "us-east-1b",
+      "AMI": "ami-87654321",
+      "OS": "Ubuntu 20.04",
+      "HealthIndicator": "OK",
+      "CPUUtilization": 45.2,
+      "MemoryUsage": 2048,
+      "DiskSpace": {
+        "RootDisk": {
+          "SizeGB": 200,
+          "UsedGB": 125,
+          "FreeGB": 75,
+          "MediaGB": 50,
+          "RootGB": 25,
+          "Documents": 30,
+          "Downloads": 20
+        }
+      }
+    }
+  ]

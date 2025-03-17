@@ -13,6 +13,9 @@ import AuthenticationWithSupabase from '@auth/AuthenticationWithSupabase';
 import MainThemeProvider from '../contexts/MainThemeProvider';
 import store from 'src/store/store';
 import { Outlet } from 'react-router-dom';
+import React from 'react';
+// Remove App.css import since it's causing errors
+// import './App.css';  
 import AppContext from 'src/contexts/AppContext';
 
 /**
