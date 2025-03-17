@@ -28,8 +28,8 @@ const CloudMonitoringDashboard = ({ title }) => {
     useEffect(() => {
         if (!dashboardRef.current) return;
 
-        // ✅ Destroy existing dashboard before creating a new one
-        if (dashboardRef.current.board) {
+        // ✅ FIXED: Added proper null check with optional chaining
+        if (dashboardRef.current?.board) {
             dashboardRef.current.board.destroy();
         }
 
@@ -79,8 +79,12 @@ const CloudMonitoringDashboard = ({ title }) => {
             ]
         });
 
-        // ✅ Cleanup function to destroy the dashboard on unmount
-        return () => dashboardRef.current.board?.destroy();
+        // ✅ FIXED: Improved cleanup function with proper null checking
+        return () => {
+            if (dashboardRef.current?.board) {
+                dashboardRef.current.board.destroy();
+            }
+        };
     }, []);
 
     return (

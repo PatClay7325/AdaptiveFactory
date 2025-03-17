@@ -46,6 +46,9 @@ const SupabaseDashboard = lazy(() => import('src/app/supabase/SupabaseDashboard'
 // ✅ Corrected Lazy Load for SettingsPage (previously DatabaseConfigPage)
 const SettingsPage = lazy(() => import('src/pages/SettingsPage'));
 
+// ✅ Add Under Development Page for placeholders
+const UnderDevelopmentPage = lazy(() => import('src/pages/under-development/UnderDevelopmentPage'));
+
 // ✅ Dynamically Import All Route Files
 const configModules: Record<string, unknown> = import.meta.glob('/src/app/**/*Route.tsx', { eager: true });
 const mainRoutes: CustomFuseRouteConfigType[] = Object.keys(configModules)
@@ -210,6 +213,71 @@ const routes: FuseRoutesType = [
 				),
 				auth: null
 			},
+			// ✅ Add placeholder routes for common navigation links
+			// Add your missing routes here with the UnderDevelopmentPage
+			{
+				path: 'admin/users',
+				element: (
+					<Suspense fallback={<FuseLoading />}>
+						<UnderDevelopmentPage title="User Management" version={''} estimatedCompletion={undefined} contactEmail={''} docsUrl={''} pageId={''} />
+					</Suspense>
+				),
+				auth: null
+			},
+			{
+				path: 'admin/roles',
+				element: (
+					<Suspense fallback={<FuseLoading />}>
+						<UnderDevelopmentPage title="Role Management" version={''} estimatedCompletion={undefined} contactEmail={''} docsUrl={''} pageId={''} />
+					</Suspense>
+				),
+				auth: null
+			},
+			{
+				path: 'admin/settings',
+				element: (
+					<Suspense fallback={<FuseLoading />}>
+						<UnderDevelopmentPage title="Settings" version={''} estimatedCompletion={undefined} contactEmail={''} docsUrl={''} pageId={''} />
+					</Suspense>
+				),
+				auth: null
+			},
+			{
+				path: 'reports',
+				element: (
+					<Suspense fallback={<FuseLoading />}>
+						<UnderDevelopmentPage title="Reports" version={''} estimatedCompletion={undefined} contactEmail={''} docsUrl={''} pageId={''} />
+					</Suspense>
+				),
+				auth: null
+			},
+			{
+				path: 'analytics',
+				element: (
+					<Suspense fallback={<FuseLoading />}>
+						<UnderDevelopmentPage title="Analytics" version={''} estimatedCompletion={undefined} contactEmail={''} docsUrl={''} pageId={''} />
+					</Suspense>
+				),
+				auth: null
+			},
+			{
+				path: 'notifications',
+				element: (
+					<Suspense fallback={<FuseLoading />}>
+						<UnderDevelopmentPage title="Notifications" version={''} estimatedCompletion={undefined} contactEmail={''} docsUrl={''} pageId={''} />
+					</Suspense>
+				),
+				auth: null
+			},
+			{
+				path: 'profile',
+				element: (
+					<Suspense fallback={<FuseLoading />}>
+						<UnderDevelopmentPage title="User Profile" version={''} estimatedCompletion={undefined} contactEmail={''} docsUrl={''} pageId={''} />
+					</Suspense>
+				),
+				auth: null
+			},
 			{
 				path: 'loading',
 				element: <FuseLoading />,
@@ -227,9 +295,14 @@ const routes: FuseRoutesType = [
 			}
 		]
 	},
+	// ✅ MODIFIED: Using UnderDevelopmentPage instead of redirecting to 404
 	{
 		path: '*',
-		element: <Navigate to="/404" />,
+		element: (
+			<Suspense fallback={<FuseLoading />}>
+				<UnderDevelopmentPage title="Page Under Development" version={''} estimatedCompletion={undefined} contactEmail={''} docsUrl={''} pageId={''} />
+			</Suspense>
+		),
 		auth: null
 	}
 ];
