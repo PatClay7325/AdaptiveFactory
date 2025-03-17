@@ -189,24 +189,28 @@ const HighchartsComponent = ({ options, containerProps, type = 'chart', onChartC
         {(type === 'chart' || type === 'stock') && (
           <>
             <Tooltip title="Zoom in">
-              <IconButton 
-                size="small" 
-                onClick={handleZoomIn}
-                disabled={isZoomed}
-                sx={{ bgcolor: 'white', '&:hover': { bgcolor: '#f5f5f5' } }}
-              >
-                <ZoomInIcon fontSize="small" />
-              </IconButton>
+              <span> {/* Added span wrapper for disabled button */}
+                <IconButton 
+                  size="small" 
+                  onClick={handleZoomIn}
+                  disabled={isZoomed}
+                  sx={{ bgcolor: 'white', '&:hover': { bgcolor: '#f5f5f5' } }}
+                >
+                  <ZoomInIcon fontSize="small" />
+                </IconButton>
+              </span>
             </Tooltip>
             <Tooltip title="Zoom out">
-              <IconButton 
-                size="small" 
-                onClick={handleZoomOut}
-                disabled={!isZoomed}
-                sx={{ bgcolor: 'white', '&:hover': { bgcolor: '#f5f5f5' } }}
-              >
-                <ZoomOutIcon fontSize="small" />
-              </IconButton>
+              <span> {/* Added span wrapper for disabled button */}
+                <IconButton 
+                  size="small" 
+                  onClick={handleZoomOut}
+                  disabled={!isZoomed}
+                  sx={{ bgcolor: 'white', '&:hover': { bgcolor: '#f5f5f5' } }}
+                >
+                  <ZoomOutIcon fontSize="small" />
+                </IconButton>
+              </span>
             </Tooltip>
           </>
         )}
@@ -847,6 +851,12 @@ function AdvancedManufacturingDashboard({ title = "Manufacturing Analytics Dashb
       useUTC: false
     },
     title: {
+      text: 'Production Trend'
+    },
+    subtitle: {
+      text: 'Units produced per day with zoom and date navigation'
+    },
+    xAxistitle: {
       text: 'Production Trend'
     },
     subtitle: {
