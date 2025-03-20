@@ -45,5 +45,5 @@
     "tailwind.config.ts",
     "vite.config.mts",
     "vite-env.d.ts"
-  ]
+, "src/pages/DashboardView.tsx"  ]
 }

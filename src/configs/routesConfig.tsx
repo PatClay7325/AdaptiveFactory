@@ -35,6 +35,11 @@ const SharedDashboards = lazy(() => import('src/pages/SharedDashboards'));
 const NotFound = lazy(() => import('src/pages/NotFound'));
 const CloudMonitoring = lazy(() => import('src/pages/dashboard/cloud-monitoring'));
 
+// ✅ Dashboard Builder Components
+const DashboardList = lazy(() => import('src/components/dashboards/DashboardList'));
+const DashboardBuilder = lazy(() => import('src/components/dashboards/builder/DashboardBuilder'));
+const DashboardView = lazy(() => import('src/pages/DashboardView')); // TypeScript will resolve the extension
+
 // ✅ Add API Documentation & Test pages
 const ApiTest = lazy(() => import('src/pages/api-test'));
 const ApiDocumentation = lazy(() => import('src/pages/admin/api-documentation/page'));
@@ -111,6 +116,50 @@ const routes: FuseRoutesType = [
 			},
 			...updatedMainRoutes, // ✅ Include dynamically imported routes
 			...supabaseRoutes, // ✅ Include Supabase routes
+            
+			// ✅ ADD DASHBOARD BUILDER ROUTES
+			{
+				path: 'dashboards',
+				children: [
+					{
+						path: '',
+						element: (
+							<Suspense fallback={<FuseLoading />}>
+								<DashboardList />
+							</Suspense>
+						),
+						auth: null
+					},
+					{
+						path: 'builder',
+						element: (
+							<Suspense fallback={<FuseLoading />}>
+								<DashboardBuilder />
+							</Suspense>
+						),
+						auth: null
+					},
+					{
+						path: 'builder/:slug',
+						element: (
+							<Suspense fallback={<FuseLoading />}>
+								<DashboardBuilder />
+							</Suspense>
+						),
+						auth: null
+					},
+					{
+						path: 'view/:slug',
+						element: (
+							<Suspense fallback={<FuseLoading />}>
+								<DashboardView />
+							</Suspense>
+						),
+						auth: null
+					}
+				]
+			},
+            
 			{
 				path: 'dashboard/executive-summary',
 				element: (
